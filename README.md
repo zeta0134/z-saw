@@ -8,23 +8,23 @@ Used in my 2022 NESDev compo entry: [Tactus](https://zeta0134.itch.io/tactus).
 
 **Important**: Z-Saw will be in control of both the IRQ and NMI vectors, due to its strict timing requirements.
 
-For now, zsaw only supports the cc65 compiler suite. Pull requests for other assembler suites are welcome.
+For now, Z-Saw only supports the cc65 compiler suite. Pull requests for other assembler suites are welcome.
 
 Place `zsaw.s` and `zsaw.inc` in your source directory, and ensure that `zsaw.s` is built and linked to your project.
 
 Edit `zsaw.inc` and configure the following, adjusting segment names to match your project conventions:
 ```
-; Z-Saw requires 12 bytes in zeropage
+; Z-Saw requires 11 bytes in zeropage
 ZSAW_ZP_SEGMENT = "ZEROPAGE"
 ; interrupt vectors and lookup tables
-ZSAW_FIXED_SEGMENT = "PRG_E000"
+ZSAW_FIXED_SEGMENT = "PRG_C000"
 ZSAW_SAMPLES_SEGMENT = "PRG_C000"
 ; Shadow OAM high page, for OAM DMA
 ZSAW_SHADOW_OAM = $02
 ; Your custom NMI handler, will be called automatically when vblank begins
 ; Note: 
 ;   - Do not perform OAM DMA, Z-Saw will handle that for you
-;   - Interrupts will be enabled upon entry
+;   - Interrupts will be enabled upon entry, please leave them enabled for proper operation
 ;   - All registers will be preserved on your behalf
 ZSAW_NMI_GAME_HANDLER = nmi_handler
 ```
@@ -58,13 +58,14 @@ jsr zsaw_play_note ; enables DMC IRQ
 jsr zsaw_silence ; disables DMC IRQ
 ```
 
-The variable `zsaw_volume` may be written at any time, even during note playback. When calling `zsaw_play_note` the effective phase of the sawtooth is reset, so you should generally avoid this unless starting a new note.
+The variable `zsaw_volume` may be written at any time, even during note playback.
 
 For integrating with a sound engine: 
   - `ZSAW_B1` is the lowest note available. 
     - This matches MIDI index 23, with a frequency of 30.87 Hz. 
   - `ZSAW_C7` is the highest note available
     - This approximates MIDI index 84, with a frequency of 1055.29 Hz
+  - This range is chosen to be compatible with FamiTracker's pitch table
 
 Caveats:
 - There is no fine pitch control

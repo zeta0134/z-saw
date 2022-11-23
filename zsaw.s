@@ -193,6 +193,13 @@ perform_oam_dma:
         sta OAM_DMA
 done_with_oam:
         jsr ZSAW_NMI_GAME_HANDLER
+
+        ; restore registers
+        pla
+        tay
+        pla
+        tax
+        pla
         rts
 .endproc
 

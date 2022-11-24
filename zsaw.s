@@ -14,8 +14,8 @@ zsaw_count: .res 1
 
 irq_enabled: .res 1
 irq_active: .res 1
-manual_nmi_needed: .res 1
-manual_oam_needed: .res 1
+zsaw_nmi_pending: .res 1
+zsaw_oam_pending: .res 1
 
 .segment ZSAW_SAMPLES_SEGMENT
 
@@ -28,8 +28,8 @@ all_00_byte: .byte $00
         lda #0
         sta irq_enabled
         sta irq_active
-        sta manual_oam_needed
-        sta manual_nmi_needed
+        sta zsaw_oam_pending
+        sta zsaw_nmi_pending
         rts
 .endproc
 
@@ -97,6 +97,13 @@ done:
         ; (It'll need to do its own OAM DMA)
         lda #$00
         sta irq_enabled
+
+        ; Just for safety, clear any delayed OAM / NMI flags, so they
+        ; aren't (accidentally) triggered the next time playback begins
+        lda #0
+        sta zsaw_nmi_pending
+        sta zsaw_oam_pending
+
         rts
 .endproc
 
@@ -135,19 +142,19 @@ restart_dmc:
         ; At this point it is safe for NMI interrupt the IRQ routine
         inc irq_active
         ; If we need to perform a manual NMI, do that now
-        bit manual_nmi_needed
+        bit zsaw_nmi_pending
         bpl no_nmi_needed
-        inc manual_nmi_needed
+        inc zsaw_nmi_pending
         jsr zsaw_manual_nmi ; this should preserve all registers, including X
 no_nmi_needed:
         ; Similarly, if NMI asked us to perform OAM DMA, do that here
-        bit manual_oam_needed
+        bit zsaw_oam_pending
         bpl no_oam_needed
         lda #$00
         sta $2003 ; OAM ADDR
         lda #ZSAW_SHADOW_OAM
         sta $4014 ; OAM DMA
-        inc manual_oam_needed
+        inc zsaw_oam_pending
 no_oam_needed:
         pla ; (4) restore A and Y
         tay ; (2)
@@ -158,7 +165,7 @@ no_oam_needed:
 .proc zsaw_nmi
         bit irq_active
         bpl safe_to_run_nmi
-        dec manual_nmi_needed
+        dec zsaw_nmi_pending
         rti ; exit immediately; IRQ will continue and call NMI when it is done
 safe_to_run_nmi:
         jsr zsaw_manual_nmi
@@ -175,7 +182,7 @@ safe_to_run_nmi:
 
         bit irq_enabled
         bpl perform_oam_dma
-        dec manual_oam_needed ; Perform OAM DMA during the IRQ routine
+        dec zsaw_oam_pending ; Perform OAM DMA during the IRQ routine
         ; allow interrupts during nmi as early as possible
         cli
         jmp done_with_oam

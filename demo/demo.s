@@ -15,10 +15,10 @@
         .byte $00
 
 .segment "CHR0"
-
+.incbin "troll8x8.chr"
 
 .segment "CHR1"
-
+.incbin "korg.chr"
 
 .zeropage
 note_sequence_ptr: .res 2
@@ -96,6 +96,13 @@ loop:
         rts
 .endproc
 
+.proc wait_for_delayed_oam
+loop:
+        lda zsaw_oam_pending
+        bne loop
+        rts
+.endproc
+
 .proc start
         lda #$00
         sta $2001 ; PPUMASK: disable rendering
@@ -109,10 +116,11 @@ loop:
 
         ; first time init
         jsr zsaw_init
+        jsr initialize_palettes
 
         ; re-enable rendering and NMI
         lda #$1E
-        sta $2002
+        sta $2001
         lda #$88
         sta $2000
 
@@ -125,6 +133,8 @@ loop:
         ; For now, loop infinitely
 gameloop:
         jsr play_note_sequence
+        jsr wait_for_delayed_oam
+        jsr draw_sprite_wall_shadow_oam
         jsr wait_for_nmi
         jmp gameloop
 .endproc
@@ -257,6 +267,171 @@ note_sequence:
         .byte ZSAW_C2, WHOLE
         .byte $FF, WHOLE ; this invalid note index should play silence
         .byte $FF, $FF ; this signals that we should restart the sequence
+
+; === Everything that follows is graphical and PPU specific, and has nothing to do with the sawtooth. ===
+
+        .zeropage
+R0: .byte $00 ; scratch bytes
+R1: .byte $00
+R2: .byte $00
+R3: .byte $00
+
+.segment "PRG_C000"
+
+DISTORTION_MASK = $3F
+
+distortion_lut:
+.byte 8
+.byte 9
+.byte 10
+.byte 10
+.byte 11
+.byte 12
+.byte 12
+.byte 13
+.byte 14
+.byte 14
+.byte 15
+.byte 15
+.byte 15
+.byte 16
+.byte 16
+.byte 16
+.byte 16
+.byte 16
+.byte 16
+.byte 16
+.byte 15
+.byte 15
+.byte 15
+.byte 14
+.byte 14
+.byte 13
+.byte 12
+.byte 12
+.byte 11
+.byte 10
+.byte 10
+.byte 9
+.byte 8
+.byte 7
+.byte 6
+.byte 6
+.byte 5
+.byte 4
+.byte 4
+.byte 3
+.byte 2
+.byte 2
+.byte 1
+.byte 1
+.byte 1
+.byte 0
+.byte 0
+.byte 0
+.byte 0
+.byte 0
+.byte 0
+.byte 0
+.byte 1
+.byte 1
+.byte 1
+.byte 2
+.byte 2
+.byte 3
+.byte 4
+.byte 4
+.byte 5
+.byte 6
+.byte 6
+.byte 7
+
+
+SPRITE_WALL_START_X = 96
+SPRITE_WALL_START_Y = 63
+
+.proc draw_sprite_wall_shadow_oam
+PosX = R0
+PosY = R1
+TileIndex = R2
+DistortionIndex = R3
+        ldx #0 ; x = sprite index in OAM
+        stx TileIndex
+        lda #SPRITE_WALL_START_Y
+        sta PosY
+row_loop:
+        lda #SPRITE_WALL_START_X
+        sta PosX
+        lda nmi_counter
+        sta DistortionIndex
+col_loop:
+        ; write one tile
+        lda DistortionIndex
+        and #DISTORTION_MASK
+        tay
+        lda distortion_lut, y
+        clc
+        adc PosY
+        sta $200, x
+        inx
+        lda TileIndex
+        sta $200, x
+        inx
+        lda #0 ; pal 0, boring attributes
+        sta $200, x
+        inx
+        lda PosX
+        sta $200, x
+        inx
+
+        ; advance to the next column
+        inc TileIndex
+        inc DistortionIndex
+        clc
+        lda #8
+        adc PosX
+        sta PosX
+        cmp #(SPRITE_WALL_START_X + 64)
+        bne col_loop
+
+        ; advance to the next row
+        clc
+        lda #8
+        adc PosY
+        sta PosY
+        cmp #(SPRITE_WALL_START_Y + 64)
+        bne row_loop
+
+        ; all done
+        rts
+.endproc
+
+palettes:
+        ; Backgrounds
+        .repeat 4
+        .byte $0f, $2d, $10, $30
+        .endrepeat
+        ; Objects
+        .repeat 4
+        .byte $0f, $09, $2a, $3c
+        .endrepeat
+
+.proc initialize_palettes
+        lda $2002 ; PPUSTATUS: reset latch
+        ; Set PPUADDR to $3F00
+        lda #$3F
+        sta $2006
+        lda #$00
+        sta $2006
+        ldx #0
+loop:
+        lda palettes, x
+        sta $2007 ; write PPUDATA
+        inx
+        cpx #32
+        bne loop
+        rts
+.endproc
 
         .segment "VECTORS"
         .addr zsaw_nmi

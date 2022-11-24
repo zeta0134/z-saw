@@ -13,8 +13,8 @@ ZSAW_SHADOW_OAM = $02
 ;   - Return with rts, not rti
 .define ZSAW_NMI_GAME_HANDLER nmi_handler
 
-; TODO: sanitize this list
 .globalzp zsaw_volume
+.globalzp zsaw_oam_pending, zsaw_nmi_pending
 .global zsaw_irq, zsaw_nmi
 .global zsaw_init, zsaw_play_note, zsaw_silence
 

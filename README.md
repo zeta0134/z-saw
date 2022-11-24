@@ -88,12 +88,12 @@ Due to some quirks of DMC playback, there are a number of strict timing requirem
 OAM DMA throws a wrengh into these requirements: it takes 513-514 cycles to complete, which is longer than the sample byte playback window. Attempting to use the sawtooth during gameplay without compensation introduces a rather nasty 60 Hz buzzing artifact.
 
 The Z-Saw library works around this problem in several ways:
-- The fastest playback rate for DMC is restricted to $E
-  - The timing window for playback rate writes increases to 72 cycles
-  - A full sample byte now takes at minimum 576 cycles to complete
+- The fastest playback rate for DMC is restricted to $D
+  - The timing window for playback rate writes increases to 84 cycles
+  - A full sample byte now takes at minimum 672 cycles to complete
   - This gives *just barely* enough time to get OAM DMA done without introducing a timing artifact
 - The timing of NMI is controlled by the library
-  - IRQ has ultimate priority, so that we can reliably hit the shorter 72 cycle window
+  - IRQ has ultimate priority, so that we can reliably hit the shorter 84 cycle window
   - If NMI interrupts IRQ, it is deferred until after IRQ is finished
 - The timing of OAM is also controlled by the library
   - If the sawtooth is playing, NMI defers OAM DMA until the after next IRQ finishes

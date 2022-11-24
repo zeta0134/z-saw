@@ -472,8 +472,9 @@ zsaw_note_period_82:
 ; Note: As6, Target Frequency: 932.33, Actual Frequency: 916.89, Tuning Error: 15.44
   .byte $01, $09, $01, $0d, $00
 zsaw_note_period_83:
-; Note: B6, Target Frequency: 987.77, Actual Frequency: 989.92, Tuning Error: 56.58
+; Note: B6, Target Frequency: 987.77, Actual Frequency: 989.92, Tuning Error: 2.15
   .byte $01, $0a, $01, $0d, $00
 zsaw_note_period_84:
 ; Note: C7, Target Frequency: 1046.50, Actual Frequency: 1055.29, Tuning Error: 8.79
   .byte $01, $0b, $01, $0d, $00
+

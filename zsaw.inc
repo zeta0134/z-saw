@@ -1,8 +1,8 @@
 ; Z-Saw requires 11 bytes in zeropage
-ZSAW_ZP_SEGMENT = "ZEROPAGE"
+.define ZSAW_ZP_SEGMENT "ZEROPAGE"
 ; interrupt vectors and lookup tables
-ZSAW_FIXED_SEGMENT = "PRG_C000"
-ZSAW_SAMPLES_SEGMENT = "PRG_C000"
+.define ZSAW_FIXED_SEGMENT "PRG_C000"
+.define ZSAW_SAMPLES_SEGMENT "PRG_C000"
 ; Shadow OAM high page, for OAM DMA
 ZSAW_SHADOW_OAM = $02
 ; Your custom NMI handler, will be called automatically when vblank begins
@@ -11,11 +11,12 @@ ZSAW_SHADOW_OAM = $02
 ;   - Interrupts will be enabled upon entry
 ;   - DO remember to preserve registers
 ;   - Return with rts, not rti
-ZSAW_NMI_GAME_HANDLER = nmi_handler
+.define ZSAW_NMI_GAME_HANDLER nmi_handler
 
 ; TODO: sanitize this list
+.globalzp zsaw_volume
 .global zsaw_irq, zsaw_nmi
-.global irq_active, irq_enabled, manual_nmi_needed, manual_oam_needed, zsaw_volume
+.global zsaw_init, zsaw_play_note, zsaw_silence
 
 ; Music defines, for manually playing notes
 ZSAW_B1  = 0

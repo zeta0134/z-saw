@@ -122,5 +122,7 @@ In FamiTracker, you can configure the N163 expansion module with 1 channel enabl
 # Credits
 
 [Blargg](http://slack.net/~ant/) - original idea to generate sawtooth waveforms with DMC interrupts
+
 [Damian "PinoBatch" Yerrick](https://github.com/pinobatch) - idea to restrict DMC playback rates to facilitate OAM DMA alongside clean playback
+
 [NESDev](https://www.nesdev.org/) - a wealth of high quality documentation for NES and FamiCom hardware behaviors

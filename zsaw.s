@@ -39,7 +39,7 @@ all_00_byte: .byte $00
         ; sanity check: is this note index in bounds?
         cmp #ZSAW_MINIMUM_INDEX
         bcc bad_note_index
-        cmp #ZSAW_MAXIMUM_INDEX
+        cmp #(ZSAW_MAXIMUM_INDEX+1)
         bcs bad_note_index
         jmp play_note
 bad_note_index:
@@ -50,21 +50,21 @@ play_note:
         tax
 
         sei ; briefly disable interrupts, for pointer safety
-        lda blarggsaw_note_lists, x 
+        lda zsaw_note_lists, x 
         sta zsaw_ptr
-        lda blarggsaw_note_lists+1, x 
+        lda zsaw_note_lists+1, x 
         sta zsaw_ptr+1
-        cli ; the pointer is valid, it should be safe to re-enable interrupts again
-
-        ; Now, if we were newly triggered, start the sample playback from scratch
-        lda irq_enabled
-        beq done ; Do not pass go. Do not collect $200
-
-        sei ; briefly disable interrupts (again) to start a new note
         lda #0
         sta zsaw_pos
         lda #1
         sta zsaw_count
+        cli ; the pointer is valid, it should be safe to re-enable interrupts again
+
+        ; Now, if we were newly triggered, start the sample playback from scratch
+        lda irq_enabled
+        bne done ; Do not pass go. Do not collect $200
+
+        sei ; briefly disable interrupts (again) to start a new note
 
         ; set up the sample address and size
         lda #<((all_00_byte - $C000) >> 6)
@@ -99,8 +99,6 @@ done:
         sta irq_enabled
         rts
 .endproc
-
-
 
 .proc zsaw_irq ; (7)
         dec irq_active ; (5) signal to NMI that the IRQ routine is in progress
@@ -175,10 +173,6 @@ safe_to_run_nmi:
         tya
         pha
 
-        ; is NMI disabled? if so get outta here fast
-        lda NmiSoftDisable
-        bne nmi_soft_disable
-
         bit irq_enabled
         bpl perform_oam_dma
         dec manual_oam_needed ; Perform OAM DMA during the IRQ routine
@@ -188,9 +182,9 @@ safe_to_run_nmi:
 perform_oam_dma:
         ; do the sprite thing
         lda #$00
-        sta OAMADDR
+        sta $2003
         lda #$02
-        sta OAM_DMA
+        sta $4014
 done_with_oam:
         jsr ZSAW_NMI_GAME_HANDLER
 

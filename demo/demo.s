@@ -27,6 +27,8 @@ note_sequence_ptr: .res 2
 
 delay_counter: .res 1
 nmi_counter: .res 1
+demo_note_volume: .res 1
+demo_note_timbre: .res 1
 
 .segment "PRG_C000"
 
@@ -124,6 +126,13 @@ loop:
         lda #$88
         sta $2000
 
+        ; initialize some variables for safety
+        lda #0
+        sta demo_note_volume
+        lda #0
+        sta demo_note_timbre
+        jsr zsaw_set_timbre
+
         ; Setup to play a simple note sequence
         lda #<note_sequence
         sta note_sequence_ptr
@@ -159,6 +168,14 @@ gameloop:
         lda #>note_sequence
         sta note_sequence_ptr+1
 
+        ; And on the replay, use a new timbre
+        inc demo_note_timbre
+        inc demo_note_timbre
+        lda demo_note_timbre
+        and #%00000111
+        sta demo_note_timbre
+        jsr zsaw_set_timbre
+
 done:
         rts
 .endproc
@@ -168,9 +185,11 @@ done:
         beq start_next_note
         dec delay_counter
 
-        lda zsaw_volume
+        lda demo_note_volume
         beq done_with_decay
-        dec zsaw_volume
+        dec demo_note_volume
+        lda demo_note_volume
+        jsr zsaw_set_volume
 done_with_decay:
         rts
 
@@ -184,7 +203,8 @@ start_next_note:
         jsr advance_to_next_note
 
         lda #64
-        sta zsaw_volume
+        sta demo_note_volume
+        jsr zsaw_set_volume
 
         rts
 .endproc
@@ -436,6 +456,5 @@ loop:
         .segment "VECTORS"
         .addr zsaw_nmi
         .addr reset
-        ;.addr irq
         .addr zsaw_irq
-
+        

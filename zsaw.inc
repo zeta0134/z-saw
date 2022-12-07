@@ -13,10 +13,21 @@ ZSAW_SHADOW_OAM = $02
 ;   - Return with rts, not rti
 .define ZSAW_NMI_GAME_HANDLER nmi_handler
 
-.globalzp zsaw_volume
 .globalzp zsaw_oam_pending, zsaw_nmi_pending
 .global zsaw_irq, zsaw_nmi
-.global zsaw_init, zsaw_play_note, zsaw_silence
+.global zsaw_init, zsaw_play_note, zsaw_silence, zsaw_set_timbre, zsaw_set_volume
+
+.global zsquare_irq
+
+; Available timbres; see README for details and limitations
+ZSAW_TIMBRE_SAW = 0
+ZSAW_TIMBRE_SAW_00 = 0
+ZSAW_TIMBRE_SAW_7F = 1
+ZSAW_TIMBRE_SQUARE = 2
+ZSAW_TIMBRE_SQUARE_00 = 2
+ZSAW_TIMBRE_SQUARE_7F = 3
+ZSAW_TIMBRE_TRIANGLE = 4
+
 
 ; Music defines, for manually playing notes
 ZSAW_B1  = 0

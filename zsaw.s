@@ -11,6 +11,9 @@ zsaw_ptr: .res 2
 zsaw_pos: .res 1
 zsaw_volume: .res 1
 zsaw_count: .res 1
+zsaw_parity_counter: .res 1
+zsaw_timbre_index: .res 1
+zsaw_timbre_ptr: .res 2
 
 irq_enabled: .res 1
 irq_active: .res 1
@@ -19,8 +22,17 @@ zsaw_oam_pending: .res 1
 
 .segment ZSAW_SAMPLES_SEGMENT
 
+; Note: these sample entries are somewhat wasteful!
+; Not entirely certain how we can fix this in a sane manner
+
 .align 64
 all_00_byte: .byte $00
+
+.align 64
+all_FF_byte: .byte $FF
+
+.align 64
+all_55_byte: .byte $55
 
 .segment ZSAW_FIXED_SEGMENT
 
@@ -30,10 +42,72 @@ all_00_byte: .byte $00
         sta irq_active
         sta zsaw_oam_pending
         sta zsaw_nmi_pending
+        sta zsaw_parity_counter
+
+        lda #0
+        sta zsaw_timbre_index
+
+        ; mostly unnecessary, but just for safety, initialize this
+        ; to the first index. On the off chance the IRQ gets called somehow
+        ; before a note plays normally, this will prevent a crash
+        lda timbre_behavior_lut+0
+        sta zsaw_timbre_ptr+0
+        lda timbre_behavior_lut+1
+        sta zsaw_timbre_ptr+1
+
         rts
 .endproc
 
-; note index in A
+; desired timbre in A
+; note: will not take effect until next play_note command
+.proc zsaw_set_timbre
+        sta zsaw_timbre_index
+        rts
+.endproc
+
+; desired volume in A, clobbers X
+; note: certain timbres invert the effect of volume, so
+; we need to vary the actual volume we use based on that
+; for music engine authors, the order should always be:
+; - timbre
+; - volume
+; - play new note
+; when changing timbre, always remember to restart the note
+.proc zsaw_set_volume
+        sta zsaw_volume
+        ldx zsaw_timbre_index
+        cpx #1
+        beq inverted
+        cpx #3
+        beq inverted
+        rts
+inverted: 
+        lda #$7F
+        sec
+        sbc zsaw_volume
+        sta zsaw_volume
+        rts
+.endproc
+
+timbre_behavior_lut:
+        .addr timbre_sawtooth
+        .addr timbre_sawtooth
+        .addr timbre_square_00
+        .addr timbre_square_7F
+        .addr timbre_triangle
+        .addr timbre_triangle
+        .addr timbre_triangle
+        .addr timbre_triangle
+        
+
+timbre_sample_lut:
+        .byte <((all_00_byte - $C000) >> 6) ; sawtooth, floor
+        .byte <((all_FF_byte - $C000) >> 6) ; sawtooth, ceiling
+        .byte <((all_55_byte - $C000) >> 6) ; square, floor
+        .byte <((all_55_byte - $C000) >> 6) ; square, ceiling
+        .byte <((all_FF_byte - $C000) >> 6) ; triangle, starts ceiling and alternates
+
+; note index in A, clobbers X
 ; assumes interrupts are already enabled
 .proc zsaw_play_note
         ; sanity check: is this note index in bounds?
@@ -50,14 +124,23 @@ play_note:
         tax
 
         sei ; briefly disable interrupts, for pointer safety
-        lda zsaw_note_lists, x 
-        sta zsaw_ptr
+        lda zsaw_note_lists+0, x 
+        sta zsaw_ptr+0
         lda zsaw_note_lists+1, x 
         sta zsaw_ptr+1
         lda #0
         sta zsaw_pos
         lda #1
         sta zsaw_count
+        ; here also set the timbre pointer, using the LUT
+        lda zsaw_timbre_index
+        and #%00000111
+        asl
+        tax
+        lda timbre_behavior_lut+0, x
+        sta zsaw_timbre_ptr+0
+        lda timbre_behavior_lut+1, x
+        sta zsaw_timbre_ptr+1
         cli ; the pointer is valid, it should be safe to re-enable interrupts again
 
         ; Now, if we were newly triggered, start the sample playback from scratch
@@ -66,8 +149,14 @@ play_note:
 
         sei ; briefly disable interrupts (again) to start a new note
 
+        ; reset the parity counter (keeps square and triangle slightly more consistent)
+        lda #0
+        sta zsaw_parity_counter
+
         ; set up the sample address and size
-        lda #<((all_00_byte - $C000) >> 6)
+        ldx zsaw_timbre_index
+        lda timbre_sample_lut, x
+
         sta $4012
         lda #0
         sta $4013
@@ -107,7 +196,7 @@ done:
         rts
 .endproc
 
-.proc zsaw_irq ; (7)
+.proc zsaw_irq
         dec irq_active ; (5) signal to NMI that the IRQ routine is in progress
         pha ; (3) save A and Y
         tya ; (2)
@@ -119,15 +208,13 @@ done:
         ; otherwise it's time to load the next entry
         ldy zsaw_pos ; (3)
         lda (zsaw_ptr), y ; (5)
-        bne load_entry ; (2) (3t)
-        ; if the count is zero, it's time to reset the sequence. First write the volume
-        ; to the PCM level
-        lda zsaw_volume ; (3)
-        sta $4011 ; (4)
-        ; then reset the postion counter to the beginning
+        bne load_next_entry ; (2) (3t)
+        ; if the count is zero, it's time to reset the entire sequence
+
+        ; reset the postion counter to the beginning
         ldy #0 ; (2)
         lda (zsaw_ptr), y ; (5)
-load_entry:
+load_first_entry:
         sta zsaw_count ; (3)
         iny ; (2)
         lda (zsaw_ptr), y ; (5)
@@ -135,7 +222,82 @@ load_entry:
         sta $4010 ; (4) set the period + interrupt for this sample
         iny ; (2)
         sty zsaw_pos ; (3)
-restart_dmc:
+
+        ; Now work out the new volume to write to the PCM level; the behavior
+        ; varies somewhat for sawtooth and square
+        jmp (zsaw_timbre_ptr) ; will jump to one of the following blocks
+
+load_next_entry:
+        ; Just like loading the first entry, without a sequence reset
+        sta zsaw_count ; (3)
+        iny ; (2)
+        lda (zsaw_ptr), y ; (5)
+        ora #$80 ; (2) set the interrupt flag
+        sta $4010 ; (4) set the period + interrupt for this sample
+        iny ; (2)
+        sty zsaw_pos ; (3)
+        jmp restart_dmc
+.endproc
+
+.proc timbre_square_00
+        ; For square waves, we alternate between the set volume and
+        ; a fixed baseline, $00 in this case
+        lda #$80                  ; (2)
+        eor zsaw_parity_counter ; (3)
+        sta zsaw_parity_counter ; (3)
+        bmi odd_phase           
+even_phase:
+        lda zsaw_volume ; (3)
+        jmp done_picking_phase ; (3)
+odd_phase:
+        lda #0 ; (2)
+done_picking_phase:
+        sta $4011 ; (4)
+        jmp restart_dmc
+.endproc
+
+.proc timbre_square_7F
+        ; For square waves, we alternate between the set volume and
+        ; a fixed baseline, $7F in this case
+        lda #$80                  ; (2)
+        eor zsaw_parity_counter ; (3)
+        sta zsaw_parity_counter ; (3)
+        bmi odd_phase           
+even_phase:
+        lda zsaw_volume ; (3)
+        jmp done_picking_phase ; (3)
+odd_phase:
+        lda #$7F ; (2)
+done_picking_phase:
+        sta $4011 ; (4)
+        jmp restart_dmc
+.endproc
+
+.proc timbre_sawtooth
+        ; For sawtooth we always write the current volume
+        ; (the direction is controlled by which sample is playing)
+        lda zsaw_volume ; (3)
+        sta $4011 ; (4)
+        jmp restart_dmc
+.endproc
+
+.proc timbre_triangle
+        ; For triangle rather than alter the volume, we alter the direction
+        lda #$80                  ; (2)
+        eor zsaw_parity_counter ; (3)
+        sta zsaw_parity_counter ; (3)
+        bmi odd_phase           
+even_phase:
+        lda #<((all_FF_byte - $C000) >> 6)
+        jmp done_picking_phase ; (3)
+odd_phase:
+        lda #<((all_00_byte - $C000) >> 6)
+done_picking_phase:
+        sta $4012 ; (4)
+        jmp restart_dmc
+.endproc
+
+.proc restart_dmc
         lda #$1F ; (2)
         sta $4015 ; (4)
         ; Now for housekeeping.
@@ -163,10 +325,11 @@ no_oam_needed:
 .endproc
 
 .proc zsaw_nmi
-        bit irq_active
-        bpl safe_to_run_nmi
-        dec zsaw_nmi_pending
-        rti ; exit immediately; IRQ will continue and call NMI when it is done
+        ; penalty and jitter: 14 cycles
+        bit irq_active ; (3)
+        bpl safe_to_run_nmi ; (2, 3t)
+        dec zsaw_nmi_pending ; (5)
+        rti ; (6) exit immediately; IRQ will continue and call NMI when it is done
 safe_to_run_nmi:
         jsr zsaw_manual_nmi
         rti

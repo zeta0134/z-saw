@@ -1,8 +1,21 @@
 # Z-Saw
 
-Play sawtooth waveforms using the NES's DMC channel in a small and game-friendly library.
+Play sawtooth and other waveforms using the NES's DMC channel in a small and game-friendly library.
 
 Used in my 2022 NESDev compo entry: [Tactus](https://zeta0134.itch.io/tactus).
+
+# Why should I use this?
+
+Pros:
+- Small library size fits very comfortably on an NROM cartridge
+- No fancy mapper hardware required
+- Significantly less PRG ROM than equivalent samples for 5 octaves worth of notes
+- Clean sawtooth is an unusual sound to get out of an unmodified front-loading NES
+
+Cons:
+- Somewhat expensive in terms of CPU cost (~13% penalty)
+- Less time during NMI to perform graphics updates
+- Raster effects become very difficult / impossible while the library is playing audio
 
 # Setup
 
@@ -50,7 +63,10 @@ Basic note playback:
 ```
 ; Setting the volume:
 lda #64
-sta zsaw_volume
+jsr zsaw_set_volume
+; Choosing a timbre
+lda #ZSAW_TIMBRE_SAWTOOTH
+jsr zsaw_set_timbre
 ; Playing a note:
 lda #ZSAW_C4
 jsr zsaw_play_note ; enables DMC IRQ
@@ -58,20 +74,35 @@ jsr zsaw_play_note ; enables DMC IRQ
 jsr zsaw_silence ; disables DMC IRQ
 ```
 
-The variable `zsaw_volume` may be written at any time, even during note playback.
+Timbre changes take effect when the next note begins.
 
-For integrating with a sound engine: 
+Volume changes may be performed at any time, even during note playback.
+
+The currently set timbre determines how the argument to zsaw_set_volume is interpreted, so for music engines, your update order should be:
+- Set Timbre
+  - Can be skipped if timbre is unchanged
+- Set Volume
+  - Can be skipped only if volume **and** timbre are unchanged
+- Start New Note
+
+For integrating with a sound engine:
   - `ZSAW_B1` is the lowest note available. 
     - This matches MIDI index 23, with a frequency of 30.87 Hz. 
   - `ZSAW_C7` is the highest note available
     - This approximates MIDI index 84, with a frequency of 1055.29 Hz
-  - This range is chosen to be compatible with FamiTracker's pitch table
+  - This range is chosen to be maximally compatible with FamiTracker's pitch table
 
 Caveats:
 - There is no fine pitch control
-- Notes above G5 begin to lose maximum volume capacity
+- Sawtooth and Triangle notes above G5 begin to lose maximum volume capacity
 - Notes above C6 start to become noticeably out of tune
 - Higher notes may be subject to occasional artifacts, as the OAM DMA timing window is borderline in these cases
+
+Timbre Notes:
+- Sawtooth and Square come in 00 and 7F flavors, which affect the resting position of the waveform
+  - Due to nonlinear mixing within the APU, this affects the DPCM volume, as well as the hardware triangle and noise volume to some extent
+- Triangle has no volume control. If you want some control over its mixing level, write a PCM level before starting a note
+
 
 # How it Works
 
@@ -104,13 +135,21 @@ The Z-Saw library works around this problem in several ways:
 
 In a nutshell, we trade tuning ability and complexity for the ability to run the sawtooth during normal gameplay with minimal audible artifacts.
 
+This library can produce two other waveforms:
+
+For 50% square, we can use a sample byte containing %01010101 byte, which encodes a flat(ish) line. When repeating each timing sequence, alternate between the tracked volume and 0. Unfortunately the "flat" sample produces an audible whine, especially at lower playback rates, but this can't be helped.
+
+For triangle, we alternate between a %00000000 byte (encoding a downward slope) and a %11111111 byte (encoding an upward slope), which produces a slightly misshappen triangle sound due to variable playback rates. Since lower notes crash into both extreme edges and clip, the effective output is closer to a trapezoid for much of the usable range, and there's no practical ability to control the volume.
+
+Since both square and triangle repeat the same timing table twice per period, they are effectively tuned 1 octave lower than the sawtooth. Be sure to account for this when composing!
+
 # Drawbacks
 
 While the sawtooth is active, an IRQ will be fired and serviced every time DMC playback ends. The service routine takes around 80 cycles to complete. This means:
 
 - There is about a 13% penalty to CPU usage while the sawtooth is playing
-  - This penalty is somewhat relaxed for low notes
-- The Z-Saw has control of the IRQ vector, so IRQ usage for other purposes is forbidden
+  - This penalty is somewhat relaxed for lower notes
+- Z-Saw has control of the IRQ vector, so IRQ usage for other purposes is forbidden
 - Checks for sprite zero / sprite overflow may be interrupted by the Z-Saw routine
 - Effectively, raster effects are difficult / impossible while the sawtooth is playing
 - Z-Saw consumes the DMC channel. DPCM samples and Z-Saw cannot play at the same time.

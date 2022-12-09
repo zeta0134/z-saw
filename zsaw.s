@@ -14,6 +14,8 @@ zsaw_count: .res 1
 zsaw_parity_counter: .res 1
 zsaw_timbre_index: .res 1
 zsaw_timbre_ptr: .res 2
+zsaw_current_note: .res 1
+zsaw_current_timbre: .res 1
 
 irq_enabled: .res 1
 irq_active: .res 1
@@ -115,11 +117,22 @@ timbre_sample_lut:
         bcc bad_note_index
         cmp #(ZSAW_MAXIMUM_INDEX+1)
         bcs bad_note_index
-        jmp play_note
+        ; only queue up a new note if either the timbre
+        ; or the note index is different from what's currently playing
+        ; otherwise we reset the phase for no good reason, and this tends
+        ; to annoy music engines
+        ldx zsaw_timbre_index
+        cpx zsaw_current_timbre
+        bne play_note
+        cmp zsaw_current_note
+        bne play_note
+        rts
 bad_note_index:
         jsr zsaw_silence
         rts
 play_note:
+        sta zsaw_current_note
+        stx zsaw_current_timbre 
         asl ; note index to word index for the table lookup
         tax
 
@@ -192,6 +205,9 @@ done:
         lda #0
         sta zsaw_nmi_pending
         sta zsaw_oam_pending
+
+        lda #$FF
+        sta zsaw_current_note
 
         rts
 .endproc

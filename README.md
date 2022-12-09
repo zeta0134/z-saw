@@ -4,6 +4,12 @@ Play sawtooth and other waveforms using the NES's DMC channel in a small and gam
 
 Used in my 2022 NESDev compo entry: [Tactus](https://zeta0134.itch.io/tactus).
 
+# ... What?
+
+DPCM go **brrrrr**:
+
+https://user-images.githubusercontent.com/1165075/206082358-8468a52b-7f3d-4e3b-b1fa-e52d7b5eec8f.mp4
+
 # Why should I use this?
 
 Pros:

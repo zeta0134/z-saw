@@ -49,7 +49,7 @@ def generate_pitch_table():
         for b in range(0, 4):
           for c in range(0, 4):
             for d in range(0, 4):
-              # for e in range(0, 4):
+              for e in range(0, 4):
                 sequence = [
                   [0x8] * eight,
                   [0x9] * nine,
@@ -57,7 +57,7 @@ def generate_pitch_table():
                   [0xB] * b,
                   [0xC] * c,
                   [0xD] * d,
-                  # [0xE] * e
+                  [0xE] * e
                 ]
                 sequence = sum(sequence, [])
                 cycles = total_cycles(sequence)
@@ -147,7 +147,7 @@ if __name__ == '__main__':
     print("Generating pitch table...")
     pitch_table = generate_pitch_table()
     print("Finding ideal dpcm rate sequences for NTSC...")
-    midi_sequences = find_midi_sequences(23, 85, pitch_table, 1789773)
+    midi_sequences = find_midi_sequences(23, 97, pitch_table, 1789773)
 
     with open(output_filename, "w") as output_file:
       # generate the table of pointers

@@ -137,9 +137,9 @@ loop:
         jsr zsaw_set_timbre
 
         ; Setup to play a simple note sequence
-        lda #<note_sequence
+        lda #<chromatic_scale_note_sequence
         sta note_sequence_ptr
-        lda #>note_sequence
+        lda #>chromatic_scale_note_sequence
         sta note_sequence_ptr+1
 
         ; For now, loop infinitely
@@ -166,9 +166,9 @@ gameloop:
         bne done
 
         ; If so, return to the beginning
-        lda #<note_sequence
+        lda #<chromatic_scale_note_sequence
         sta note_sequence_ptr
-        lda #>note_sequence
+        lda #>chromatic_scale_note_sequence
         sta note_sequence_ptr+1
 
         ; And on the replay, use a new timbre
@@ -216,7 +216,7 @@ WHOLE = 60
 HALF = 30
 QUARTER = 15
 
-note_sequence:
+major_scale_note_sequence:
         .byte ZSAW_C2, HALF
         .byte ZSAW_D2, QUARTER
         .byte ZSAW_E2, QUARTER
@@ -253,6 +253,20 @@ note_sequence:
         .byte ZSAW_A6, QUARTER
         .byte ZSAW_B6, QUARTER
         .byte ZSAW_C7, HALF
+        .byte ZSAW_D7, QUARTER
+        .byte ZSAW_E7, QUARTER
+        .byte ZSAW_F7, QUARTER
+        .byte ZSAW_G7, QUARTER
+        .byte ZSAW_A7, QUARTER
+        .byte ZSAW_B7, QUARTER
+        .byte ZSAW_C8, HALF
+        .byte ZSAW_B7, QUARTER
+        .byte ZSAW_A7, QUARTER
+        .byte ZSAW_G7, QUARTER
+        .byte ZSAW_F7, QUARTER
+        .byte ZSAW_E7, QUARTER
+        .byte ZSAW_D7, QUARTER
+        .byte ZSAW_C7, HALF
         .byte ZSAW_B6, QUARTER
         .byte ZSAW_A6, QUARTER
         .byte ZSAW_G6, QUARTER
@@ -288,6 +302,168 @@ note_sequence:
         .byte ZSAW_E2, QUARTER
         .byte ZSAW_D2, QUARTER
         .byte ZSAW_C2, WHOLE
+        .byte $FF, WHOLE ; this invalid note index should play silence
+        .byte $FF, $FF ; this signals that we should restart the sequence
+
+chromatic_scale_note_sequence:
+        .byte ZSAW_C2, QUARTER
+        .byte ZSAW_CS2, QUARTER
+        .byte ZSAW_D2, QUARTER
+        .byte ZSAW_DS2, QUARTER
+        .byte ZSAW_E2, QUARTER
+        .byte ZSAW_F2, QUARTER
+        .byte ZSAW_FS2, QUARTER
+        .byte ZSAW_G2, QUARTER
+        .byte ZSAW_GS2, QUARTER
+        .byte ZSAW_A2, QUARTER
+        .byte ZSAW_AS2, QUARTER
+        .byte ZSAW_B2, QUARTER
+
+        .byte ZSAW_C3, QUARTER
+        .byte ZSAW_CS3, QUARTER
+        .byte ZSAW_D3, QUARTER
+        .byte ZSAW_DS3, QUARTER
+        .byte ZSAW_E3, QUARTER
+        .byte ZSAW_F3, QUARTER
+        .byte ZSAW_FS3, QUARTER
+        .byte ZSAW_G3, QUARTER
+        .byte ZSAW_GS3, QUARTER
+        .byte ZSAW_A3, QUARTER
+        .byte ZSAW_AS3, QUARTER
+        .byte ZSAW_B3, QUARTER
+
+        .byte ZSAW_C4, QUARTER
+        .byte ZSAW_CS4, QUARTER
+        .byte ZSAW_D4, QUARTER
+        .byte ZSAW_DS4, QUARTER
+        .byte ZSAW_E4, QUARTER
+        .byte ZSAW_F4, QUARTER
+        .byte ZSAW_FS4, QUARTER
+        .byte ZSAW_G4, QUARTER
+        .byte ZSAW_GS4, QUARTER
+        .byte ZSAW_A4, QUARTER
+        .byte ZSAW_AS4, QUARTER
+        .byte ZSAW_B4, QUARTER
+
+        .byte ZSAW_C5, QUARTER
+        .byte ZSAW_CS5, QUARTER
+        .byte ZSAW_D5, QUARTER
+        .byte ZSAW_DS5, QUARTER
+        .byte ZSAW_E5, QUARTER
+        .byte ZSAW_F5, QUARTER
+        .byte ZSAW_FS5, QUARTER
+        .byte ZSAW_G5, QUARTER
+        .byte ZSAW_GS5, QUARTER
+        .byte ZSAW_A5, QUARTER
+        .byte ZSAW_AS5, QUARTER
+        .byte ZSAW_B5, QUARTER
+
+        .byte ZSAW_C6, QUARTER
+        .byte ZSAW_CS6, QUARTER
+        .byte ZSAW_D6, QUARTER
+        .byte ZSAW_DS6, QUARTER
+        .byte ZSAW_E6, QUARTER
+        .byte ZSAW_F6, QUARTER
+        .byte ZSAW_FS6, QUARTER
+        .byte ZSAW_G6, QUARTER
+        .byte ZSAW_GS6, QUARTER
+        .byte ZSAW_A6, QUARTER
+        .byte ZSAW_AS6, QUARTER
+        .byte ZSAW_B6, QUARTER
+
+        .byte ZSAW_C7, QUARTER
+        .byte ZSAW_CS7, QUARTER
+        .byte ZSAW_D7, QUARTER
+        .byte ZSAW_DS7, QUARTER
+        .byte ZSAW_E7, QUARTER
+        .byte ZSAW_F7, QUARTER
+        .byte ZSAW_FS7, QUARTER
+        .byte ZSAW_G7, QUARTER
+        .byte ZSAW_GS7, QUARTER
+        .byte ZSAW_A7, QUARTER
+        .byte ZSAW_AS7, QUARTER
+        .byte ZSAW_B7, QUARTER
+
+        .byte ZSAW_C8, QUARTER
+
+        .byte ZSAW_B7, QUARTER
+        .byte ZSAW_AS7, QUARTER
+        .byte ZSAW_A7, QUARTER
+        .byte ZSAW_GS7, QUARTER
+        .byte ZSAW_G7, QUARTER
+        .byte ZSAW_FS7, QUARTER
+        .byte ZSAW_F7, QUARTER
+        .byte ZSAW_E7, QUARTER
+        .byte ZSAW_DS7, QUARTER
+        .byte ZSAW_D7, QUARTER
+        .byte ZSAW_CS7, QUARTER
+        .byte ZSAW_C7, QUARTER
+
+        .byte ZSAW_B6, QUARTER
+        .byte ZSAW_AS6, QUARTER
+        .byte ZSAW_A6, QUARTER
+        .byte ZSAW_GS6, QUARTER
+        .byte ZSAW_G6, QUARTER
+        .byte ZSAW_FS6, QUARTER
+        .byte ZSAW_F6, QUARTER
+        .byte ZSAW_E6, QUARTER
+        .byte ZSAW_DS6, QUARTER
+        .byte ZSAW_D6, QUARTER
+        .byte ZSAW_CS6, QUARTER
+        .byte ZSAW_C6, QUARTER
+
+        .byte ZSAW_B5, QUARTER
+        .byte ZSAW_AS5, QUARTER
+        .byte ZSAW_A5, QUARTER
+        .byte ZSAW_GS5, QUARTER
+        .byte ZSAW_G5, QUARTER
+        .byte ZSAW_FS5, QUARTER
+        .byte ZSAW_F5, QUARTER
+        .byte ZSAW_E5, QUARTER
+        .byte ZSAW_DS5, QUARTER
+        .byte ZSAW_D5, QUARTER
+        .byte ZSAW_CS5, QUARTER
+        .byte ZSAW_C5, QUARTER
+
+        .byte ZSAW_B4, QUARTER
+        .byte ZSAW_AS4, QUARTER
+        .byte ZSAW_A4, QUARTER
+        .byte ZSAW_GS4, QUARTER
+        .byte ZSAW_G4, QUARTER
+        .byte ZSAW_FS4, QUARTER
+        .byte ZSAW_F4, QUARTER
+        .byte ZSAW_E4, QUARTER
+        .byte ZSAW_DS4, QUARTER
+        .byte ZSAW_D4, QUARTER
+        .byte ZSAW_CS4, QUARTER
+        .byte ZSAW_C4, QUARTER
+
+        .byte ZSAW_B3, QUARTER
+        .byte ZSAW_AS3, QUARTER
+        .byte ZSAW_A3, QUARTER
+        .byte ZSAW_GS3, QUARTER
+        .byte ZSAW_G3, QUARTER
+        .byte ZSAW_FS3, QUARTER
+        .byte ZSAW_F3, QUARTER
+        .byte ZSAW_E3, QUARTER
+        .byte ZSAW_DS3, QUARTER
+        .byte ZSAW_D3, QUARTER
+        .byte ZSAW_CS3, QUARTER
+        .byte ZSAW_C3, QUARTER
+
+        .byte ZSAW_B2, QUARTER
+        .byte ZSAW_AS2, QUARTER
+        .byte ZSAW_A2, QUARTER
+        .byte ZSAW_GS2, QUARTER
+        .byte ZSAW_G2, QUARTER
+        .byte ZSAW_FS2, QUARTER
+        .byte ZSAW_F2, QUARTER
+        .byte ZSAW_E2, QUARTER
+        .byte ZSAW_DS2, QUARTER
+        .byte ZSAW_D2, QUARTER
+        .byte ZSAW_CS2, QUARTER
+        .byte ZSAW_C2, WHOLE
+
         .byte $FF, WHOLE ; this invalid note index should play silence
         .byte $FF, $FF ; this signals that we should restart the sequence
 

@@ -2,7 +2,7 @@
 
 .import ZSAW_NMI_GAME_HANDLER
 
-.segment ZSAW_ZP_SEGMENT
+.segment ZSAW_ZP_SEGMENT: zeropage
 
 table_entry: .res 1
 table_pos: .res 1

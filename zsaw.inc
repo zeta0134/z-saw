@@ -1,5 +1,5 @@
 ; Z-Saw requires 11 bytes in zeropage
-.define ZSAW_ZP_SEGMENT "ZEROPAGE"
+.define ZSAW_ZP_SEGMENT "ZSAW_ZEROPAGE"
 ; interrupt vectors and lookup tables
 .define ZSAW_FIXED_SEGMENT "PRG_C000"
 .define ZSAW_SAMPLES_SEGMENT "PRG_C000"

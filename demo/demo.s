@@ -137,9 +137,9 @@ loop:
         jsr zsaw_set_timbre
 
         ; Setup to play a simple note sequence
-        lda #<chromatic_scale_note_sequence
+        lda #<major_scale_note_sequence
         sta note_sequence_ptr
-        lda #>chromatic_scale_note_sequence
+        lda #>major_scale_note_sequence
         sta note_sequence_ptr+1
 
         ; For now, loop infinitely
@@ -166,9 +166,9 @@ gameloop:
         bne done
 
         ; If so, return to the beginning
-        lda #<chromatic_scale_note_sequence
+        lda #<major_scale_note_sequence
         sta note_sequence_ptr
-        lda #>chromatic_scale_note_sequence
+        lda #>major_scale_note_sequence
         sta note_sequence_ptr+1
 
         ; And on the replay, use a new timbre

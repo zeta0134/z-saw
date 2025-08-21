@@ -43,21 +43,21 @@ def total_cycles(dpcm_rate_sequence):
 
 def generate_pitch_table():
   pitch_table = []
-  for eight in range(0, 50):
+  for eight in range(0, 4):
     for nine in range(0, 4):
       for a in range(0, 4):
         for b in range(0, 4):
           for c in range(0, 4):
-            for d in range(0, 4):
+            for d in range(0, 100):
               for e in range(0, 4):
                 sequence = [
-                  [0x8] * eight,
-                  [0x9] * nine,
-                  [0xA] * a,
-                  [0xB] * b,
-                  [0xC] * c,
+                  # [0x8] * eight,
+                  # [0x9] * nine,
+                  # [0xA] * a,
+                  # [0xB] * b,
+                  # [0xC] * c,
                   [0xD] * d,
-                  [0xE] * e
+                  # [0xE] * e
                 ]
                 sequence = sum(sequence, [])
                 cycles = total_cycles(sequence)
@@ -72,15 +72,29 @@ def find_midi_sequences(first_index, last_index, pitch_table, base_frequency_hz)
     target_length = cpu_cycles_needed(midi_frequency(midi_index), base_frequency_hz)
     lower_pitches = [pitch for pitch in pitch_table if pitch["length"] <= target_length]
     higher_pitches = [pitch for pitch in pitch_table if pitch["length"] > target_length]
-    lower_sequence = lower_pitches[-1]
-    higher_sequence = higher_pitches[0]
-    lower_sequence["error"] = abs((base_frequency_hz / lower_sequence["length"]) - target_frequency)
-    higher_sequence["error"] = abs((base_frequency_hz / higher_sequence["length"]) - target_frequency)
-    print("MIDI Index: ", midi_index, "Frequency: ", target_frequency)
-    print("Lower candidate: ", lower_sequence)
-    print("Higher candidate: ", higher_sequence)
-    candidate_sequences = sorted([lower_sequence, higher_sequence], key=lambda i: i["error"])
-    chosen_sequence = candidate_sequences[0]
+    chosen_sequence = None
+    if len(higher_pitches) == 0:
+      lower_sequence = lower_pitches[-1]
+      lower_sequence["error"] = abs((base_frequency_hz / lower_sequence["length"]) - target_frequency)
+      print("MIDI Index: ", midi_index, "Frequency: ", target_frequency)
+      print("Lower candidate: ", lower_sequence)
+      chosen_sequence = lower_sequence
+    elif len(lower_pitches) == 0:
+      higher_sequence = higher_pitches[0]
+      higher_sequence["error"] = abs((base_frequency_hz / higher_sequence["length"]) - target_frequency)
+      print("MIDI Index: ", midi_index, "Frequency: ", target_frequency)
+      print("Higher candidate: ", higher_sequence)
+      chosen_sequence = higher_sequence
+    else:
+      lower_sequence = lower_pitches[-1]
+      higher_sequence = higher_pitches[0]
+      lower_sequence["error"] = abs((base_frequency_hz / lower_sequence["length"]) - target_frequency)
+      higher_sequence["error"] = abs((base_frequency_hz / higher_sequence["length"]) - target_frequency)
+      print("MIDI Index: ", midi_index, "Frequency: ", target_frequency)
+      print("Lower candidate: ", lower_sequence)
+      print("Higher candidate: ", higher_sequence)
+      candidate_sequences = sorted([lower_sequence, higher_sequence], key=lambda i: i["error"])
+      chosen_sequence = candidate_sequences[0]
 
     actual_frequency = base_frequency_hz / chosen_sequence["length"]
     midi_sequences.append({

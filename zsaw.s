@@ -462,143 +462,119 @@ zsaw_note_lists:
   .word zsaw_note_period_95
   .word zsaw_note_period_96
 zsaw_note_period_23:
-; Note: B1, Target Frequency: 30.87, Actual Frequency: 30.87, Tuning Error: 0.00
-  .byte $20, $08, $03, $0a, $02, $0b, $03, $0c
-  .byte $02, $0d, $00
+; Note: B1, Target Frequency: 30.87, Actual Frequency: 30.97, Tuning Error: 0.10
+  .byte $56, $0d, $00
 zsaw_note_period_24:
-; Note: C2, Target Frequency: 32.70, Actual Frequency: 32.71, Tuning Error: 0.00
-  .byte $24, $08, $00
+; Note: C2, Target Frequency: 32.70, Actual Frequency: 32.88, Tuning Error: 0.18
+  .byte $51, $0d, $00
 zsaw_note_period_25:
-; Note: Cs2, Target Frequency: 34.65, Actual Frequency: 34.64, Tuning Error: 0.01
-  .byte $1b, $08, $01, $09, $03, $0a, $02, $0b
-  .byte $03, $0c, $02, $0d, $00
+; Note: Cs2, Target Frequency: 34.65, Actual Frequency: 34.59, Tuning Error: 0.06
+  .byte $4d, $0d, $00
 zsaw_note_period_26:
-; Note: D2, Target Frequency: 36.71, Actual Frequency: 36.71, Tuning Error: 0.00
-  .byte $1e, $08, $01, $09, $01, $0b, $01, $0c
-  .byte $00
+; Note: D2, Target Frequency: 36.71, Actual Frequency: 36.48, Tuning Error: 0.22
+  .byte $49, $0d, $00
 zsaw_note_period_27:
-; Note: Ds2, Target Frequency: 38.89, Actual Frequency: 38.89, Tuning Error: 0.00
-  .byte $1b, $08, $03, $09, $01, $0a, $00
+; Note: Ds2, Target Frequency: 38.89, Actual Frequency: 39.17, Tuning Error: 0.28
+  .byte $44, $0d, $00
 zsaw_note_period_28:
-; Note: E2, Target Frequency: 41.20, Actual Frequency: 41.20, Tuning Error: 0.00
-  .byte $16, $08, $03, $09, $02, $0a, $03, $0c
-  .byte $02, $0d, $00
+; Note: E2, Target Frequency: 41.20, Actual Frequency: 40.97, Tuning Error: 0.23
+  .byte $41, $0d, $00
 zsaw_note_period_29:
 ; Note: F2, Target Frequency: 43.65, Actual Frequency: 43.66, Tuning Error: 0.01
-  .byte $18, $08, $03, $09, $01, $0d, $00
+  .byte $3d, $0d, $00
 zsaw_note_period_30:
-; Note: Fs2, Target Frequency: 46.25, Actual Frequency: 46.24, Tuning Error: 0.01
-  .byte $11, $08, $03, $09, $03, $0a, $03, $0b
-  .byte $03, $0c, $00
+; Note: Fs2, Target Frequency: 46.25, Actual Frequency: 45.92, Tuning Error: 0.33
+  .byte $3a, $0d, $00
 zsaw_note_period_31:
-; Note: G2, Target Frequency: 49.00, Actual Frequency: 49.00, Tuning Error: 0.00
-  .byte $12, $08, $03, $0a, $02, $0b, $02, $0c
-  .byte $03, $0d, $00
+; Note: G2, Target Frequency: 49.00, Actual Frequency: 49.32, Tuning Error: 0.32
+  .byte $36, $0d, $00
 zsaw_note_period_32:
-; Note: Gs2, Target Frequency: 51.91, Actual Frequency: 51.91, Tuning Error: 0.01
-  .byte $10, $08, $01, $09, $02, $0a, $02, $0b
-  .byte $03, $0c, $03, $0d, $00
+; Note: Gs2, Target Frequency: 51.91, Actual Frequency: 52.22, Tuning Error: 0.31
+  .byte $33, $0d, $00
 zsaw_note_period_33:
-; Note: A2, Target Frequency: 55.00, Actual Frequency: 55.00, Tuning Error: 0.00
-  .byte $0e, $08, $03, $09, $01, $0a, $03, $0b
-  .byte $03, $0c, $01, $0d, $00
+; Note: A2, Target Frequency: 55.00, Actual Frequency: 55.49, Tuning Error: 0.49
+  .byte $30, $0d, $00
 zsaw_note_period_34:
-; Note: As2, Target Frequency: 58.27, Actual Frequency: 58.26, Tuning Error: 0.01
-  .byte $0d, $08, $03, $09, $03, $0a, $02, $0c
-  .byte $03, $0d, $00
+; Note: As2, Target Frequency: 58.27, Actual Frequency: 57.90, Tuning Error: 0.37
+  .byte $2e, $0d, $00
 zsaw_note_period_35:
-; Note: B2, Target Frequency: 61.74, Actual Frequency: 61.73, Tuning Error: 0.00
-  .byte $0d, $08, $02, $0a, $03, $0b, $03, $0c
-  .byte $02, $0d, $00
+; Note: B2, Target Frequency: 61.74, Actual Frequency: 61.94, Tuning Error: 0.20
+  .byte $2b, $0d, $00
 zsaw_note_period_36:
-; Note: C3, Target Frequency: 65.41, Actual Frequency: 65.42, Tuning Error: 0.01
-  .byte $12, $08, $00
+; Note: C3, Target Frequency: 65.41, Actual Frequency: 64.96, Tuning Error: 0.45
+  .byte $29, $0d, $00
 zsaw_note_period_37:
-; Note: Cs3, Target Frequency: 69.30, Actual Frequency: 69.31, Tuning Error: 0.01
-  .byte $0e, $08, $02, $09, $01, $0a, $01, $0c
-  .byte $00
+; Note: Cs3, Target Frequency: 69.30, Actual Frequency: 69.26, Tuning Error: 0.03
+  .byte $11, $0c, $11, $0d, $00
 zsaw_note_period_38:
 ; Note: D3, Target Frequency: 73.42, Actual Frequency: 73.40, Tuning Error: 0.02
-  .byte $07, $08, $03, $09, $02, $0a, $03, $0b
-  .byte $03, $0c, $03, $0d, $00
+  .byte $18, $0c, $06, $0d, $00
 zsaw_note_period_39:
 ; Note: Ds3, Target Frequency: 77.78, Actual Frequency: 77.79, Tuning Error: 0.01
-  .byte $0c, $08, $03, $0b, $02, $0c, $00
+  .byte $14, $0c, $09, $0d, $00
 zsaw_note_period_40:
 ; Note: E3, Target Frequency: 82.41, Actual Frequency: 82.43, Tuning Error: 0.03
-  .byte $0d, $08, $01, $09, $01, $0d, $00
+  .byte $05, $0c, $1a, $0d, $00
 zsaw_note_period_41:
 ; Note: F3, Target Frequency: 87.31, Actual Frequency: 87.32, Tuning Error: 0.02
-  .byte $09, $08, $02, $09, $03, $0a, $01, $0c
-  .byte $00
+  .byte $15, $0c, $04, $0d, $00
 zsaw_note_period_42:
 ; Note: Fs3, Target Frequency: 92.50, Actual Frequency: 92.52, Tuning Error: 0.02
-  .byte $0b, $08, $01, $09, $02, $0d, $00
+  .byte $03, $0c, $19, $0d, $00
 zsaw_note_period_43:
-; Note: G3, Target Frequency: 98.00, Actual Frequency: 98.04, Tuning Error: 0.04
-  .byte $09, $08, $02, $09, $03, $0d, $00
+; Note: G3, Target Frequency: 98.00, Actual Frequency: 97.95, Tuning Error: 0.05
+  .byte $10, $0c, $07, $0d, $00
 zsaw_note_period_44:
-; Note: Gs3, Target Frequency: 103.83, Actual Frequency: 103.86, Tuning Error: 0.04
-  .byte $09, $08, $01, $09, $02, $0a, $00
+; Note: Gs3, Target Frequency: 103.83, Actual Frequency: 103.77, Tuning Error: 0.06
+  .byte $0e, $0c, $08, $0d, $00
 zsaw_note_period_45:
-; Note: A3, Target Frequency: 110.00, Actual Frequency: 109.99, Tuning Error: 0.01
-  .byte $04, $08, $03, $0a, $03, $0b, $02, $0c
-  .byte $03, $0d, $00
+; Note: A3, Target Frequency: 110.00, Actual Frequency: 110.10, Tuning Error: 0.10
+  .byte $10, $0c, $04, $0d, $00
 zsaw_note_period_46:
-; Note: As3, Target Frequency: 116.54, Actual Frequency: 116.52, Tuning Error: 0.02
-  .byte $02, $08, $01, $09, $03, $0a, $03, $0b
-  .byte $03, $0c, $03, $0d, $00
+; Note: As3, Target Frequency: 116.54, Actual Frequency: 116.64, Tuning Error: 0.10
+  .byte $07, $0c, $0e, $0d, $00
 zsaw_note_period_47:
 ; Note: B3, Target Frequency: 123.47, Actual Frequency: 123.47, Tuning Error: 0.00
-  .byte $05, $08, $01, $0a, $02, $0b, $02, $0c
-  .byte $03, $0d, $00
+  .byte $06, $0c, $0e, $0d, $00
 zsaw_note_period_48:
 ; Note: C4, Target Frequency: 130.81, Actual Frequency: 130.83, Tuning Error: 0.02
-  .byte $09, $08, $00
+  .byte $09, $0c, $09, $0d, $00
 zsaw_note_period_49:
-; Note: Cs4, Target Frequency: 138.59, Actual Frequency: 138.61, Tuning Error: 0.02
-  .byte $07, $08, $02, $0a, $00
+; Note: Cs4, Target Frequency: 138.59, Actual Frequency: 138.27, Tuning Error: 0.32
+  .byte $01, $0c, $12, $0d, $00
 zsaw_note_period_50:
 ; Note: D4, Target Frequency: 146.83, Actual Frequency: 146.80, Tuning Error: 0.03
-  .byte $01, $08, $03, $09, $02, $0a, $03, $0c
-  .byte $03, $0d, $00
+  .byte $0c, $0c, $03, $0d, $00
 zsaw_note_period_51:
-; Note: Ds4, Target Frequency: 155.56, Actual Frequency: 155.58, Tuning Error: 0.01
-  .byte $05, $08, $02, $09, $02, $0d, $00
+; Note: Ds4, Target Frequency: 155.56, Actual Frequency: 155.36, Tuning Error: 0.20
+  .byte $0c, $0c, $02, $0d, $00
 zsaw_note_period_52:
-; Note: E4, Target Frequency: 164.81, Actual Frequency: 164.74, Tuning Error: 0.07
-  .byte $01, $08, $03, $0a, $02, $0b, $03, $0c
-  .byte $02, $0d, $00
+; Note: E4, Target Frequency: 164.81, Actual Frequency: 164.99, Tuning Error: 0.17
+  .byte $0c, $0c, $01, $0d, $00
 zsaw_note_period_53:
 ; Note: F4, Target Frequency: 174.61, Actual Frequency: 174.51, Tuning Error: 0.10
-  .byte $02, $08, $01, $09, $02, $0b, $03, $0c
-  .byte $02, $0d, $00
+  .byte $01, $0c, $0e, $0d, $00
 zsaw_note_period_54:
-; Note: Fs4, Target Frequency: 185.00, Actual Frequency: 184.89, Tuning Error: 0.10
-  .byte $02, $09, $03, $0a, $02, $0c, $03, $0d
-  .byte $00
+; Note: Fs4, Target Frequency: 185.00, Actual Frequency: 185.51, Tuning Error: 0.51
+  .byte $09, $0c, $03, $0d, $00
 zsaw_note_period_55:
-; Note: G4, Target Frequency: 196.00, Actual Frequency: 195.90, Tuning Error: 0.09
-  .byte $01, $09, $02, $0a, $01, $0b, $03, $0c
-  .byte $03, $0d, $00
+; Note: G4, Target Frequency: 196.00, Actual Frequency: 196.25, Tuning Error: 0.25
+  .byte $06, $0c, $06, $0d, $00
 zsaw_note_period_56:
 ; Note: Gs4, Target Frequency: 207.65, Actual Frequency: 207.53, Tuning Error: 0.12
-  .byte $02, $08, $01, $0b, $03, $0c, $03, $0d
-  .byte $00
+  .byte $07, $0c, $04, $0d, $00
 zsaw_note_period_57:
 ; Note: A4, Target Frequency: 220.00, Actual Frequency: 220.20, Tuning Error: 0.20
-  .byte $04, $08, $02, $0b, $00
+  .byte $08, $0c, $02, $0d, $00
 zsaw_note_period_58:
-; Note: As4, Target Frequency: 233.08, Actual Frequency: 233.04, Tuning Error: 0.04
-  .byte $01, $09, $01, $0a, $02, $0b, $03, $0c
-  .byte $01, $0d, $00
+; Note: As4, Target Frequency: 233.08, Actual Frequency: 234.51, Tuning Error: 1.43
+  .byte $09, $0c, $00
 zsaw_note_period_59:
 ; Note: B4, Target Frequency: 246.94, Actual Frequency: 246.93, Tuning Error: 0.01
-  .byte $01, $0a, $03, $0b, $02, $0c, $02, $0d
-  .byte $00
+  .byte $03, $0c, $07, $0d, $00
 zsaw_note_period_60:
-; Note: C5, Target Frequency: 261.63, Actual Frequency: 261.36, Tuning Error: 0.27
-  .byte $02, $09, $02, $0a, $03, $0d, $00
+; Note: C5, Target Frequency: 261.63, Actual Frequency: 259.54, Tuning Error: 2.09
+  .byte $01, $0c, $09, $0d, $00
 zsaw_note_period_61:
 ; Note: Cs5, Target Frequency: 277.18, Actual Frequency: 277.57, Tuning Error: 0.39
   .byte $02, $08, $02, $09, $01, $0c, $00

@@ -16,6 +16,8 @@ zsaw_timbre_index: .res 1
 zsaw_timbre_ptr: .res 2
 zsaw_current_note: .res 1
 zsaw_current_timbre: .res 1
+zsaw_preserve_a: .res 1
+zsaw_preserve_y: .res 1
 
 irq_enabled: .res 1
 irq_active: .res 1
@@ -217,9 +219,8 @@ done:
 
 .proc zsaw_irq
         dec irq_active ; (5) signal to NMI that the IRQ routine is in progress
-        pha ; (3) save A and Y
-        tya ; (2)
-        pha ; (3)
+        sta zsaw_preserve_a ; (3) save A and Y
+        sty zsaw_preserve_y ; (3)
         ; decrement the RLE counter
         dec zsaw_count ; (5)
         ; if this is still positive, simply continue playing the last sample
@@ -279,9 +280,8 @@ no_oam_needed:
         inc zsaw_nmi_pending
         jsr zsaw_manual_nmi ; this should preserve all registers, including X
 no_nmi_needed:
-        pla ; (4) restore A and Y
-        tay ; (2)
-        pla ; (4)
+        ldy zsaw_preserve_y ; (3) restore A and Y
+        lda zsaw_preserve_a ; (3)
         rti
 .endproc
 

@@ -16,6 +16,10 @@ ZSAW_SHADOW_OAM = $02
 .globalzp zsaw_oam_pending, zsaw_nmi_pending
 .global zsaw_irq, zsaw_nmi
 .global zsaw_init, zsaw_play_note, zsaw_silence, zsaw_set_timbre, zsaw_set_volume
+; z-saw preserves A/Y here, to save 6 cycles per interrupt over using the stack.
+; clever software can seed these values, then check for changes to detect z-saw
+; interruptions. can be handy for input polling.
+.globalzp zsaw_preserve_a, zsaw_preserve_y
 
 .global zsquare_irq
 

@@ -30,6 +30,9 @@ nmi_counter: .res 1
 demo_note_volume: .res 1
 demo_note_timbre: .res 1
 
+
+.segment "PRG_8000"
+        ; Has nothing :(
 .segment "PRG_C000"
 
 .macro spinwait_for_vblank
@@ -120,8 +123,8 @@ loop:
         jsr zsaw_init
         jsr initialize_palettes
 
-        ; re-enable rendering and NMI
-        lda #$1E
+        ; re-enable sprite (not background, we didn't initialize it) rendering and NMI
+        lda #$14
         sta $2001
         lda #$88
         sta $2000
